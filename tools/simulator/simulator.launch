@@ -1,0 +1,27 @@
+<launch>
+  <arg name="map"/>
+  <master auto="start"/>
+  
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(env ROBORTS_PATH)/tools/map/$(arg map).yaml" respawn="false" />
+  
+  <!-- Run the Stage Simulator -->
+  <node pkg="stage_ros" type="stageros" name="stageros" args="$(env ROBORTS_PATH)/tools/simulator/$(arg map).world" respawn="false" >
+    <remap from="robot_0/base_scan" to="scan_filtered"/> 
+    <remap from="robot_0/odom" to="odom"/>
+    <remap from="robot_0/base_pose_ground_truth" to="base_pose_ground_truth"/>
+    <remap from="robot_0/cmd_vel" to="cmd_vel"/> 
+    <remap from="robot_1/base_scan" to="robot_1/scan_filtered"/>  
+    <param name="base_watchdog_timeout" value="0.05"/>
+  </node>
+
+  <!-- Run the fake localization -->
+  <!--node name="fake_localization" pkg="fake_localization" type="fake_localization" respawn="false" /-->
+
+  <!-- Run the rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(env ROBORTS_PATH)/tools/rviz/rm.rviz" />
+
+</launch>
+
